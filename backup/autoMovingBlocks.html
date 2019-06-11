@@ -1,0 +1,101 @@
+<!Doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>BabylongJS Demo</title>
+        <script src="https://cdn.babylonjs.com/babylon.max.js"></script>
+        <style>
+            #canvas {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+        <script>
+            window.addEventListener("DOMContentLoaded", function() {
+                var canvas = document.getElementById('canvas');
+                var engine = new BABYLON.Engine(canvas, true);
+                
+                let boxArr = [];
+
+                var createScene = function(){
+                    var scene = new BABYLON.Scene(engine);
+                    // scene is a world or level in babylon
+                    scene.clearColor = new BABYLON.Color3.White();
+                    // every time screen refreshes, screen is painted white.
+                    
+                    
+                    let i = 0;
+                    while (i < 10) {
+                        boxArr.push(BABYLON.Mesh.CreateBox(`Box${i}`, 4.0, scene));
+                        i++;
+                    };
+                    // var box = BABYLON.Mesh.CreateBox('Box', 4.0, scene); // 4x4x4 box
+                    // var box2 = BABYLON.Mesh.CreateBox('Box2', 4.0, scene); // 4x4x4 box
+                    // var material = new BABYLON.StandardMaterial('material1', scene);
+                    // material.wireframe = true; // tell the material to be wireframed.
+                    // box2.material = material; // assign material to 2nd box.
+                    // box2.position = new BABYLON.Vector3(0,3,0)
+
+                    // free move camera:
+                    var camera = new BABYLON.FreeCamera('camera1',
+                        new BABYLON.Vector3(0,6,-10), scene); // places new item at 0,0 origin? or 0,6 (up 6 on y axis)
+                    camera.setTarget(BABYLON.Vector3.Zero()); // default should already be zero though.
+                    
+                    // camera that pans around something:
+                    // var camera = new BABYLON.ArcRotateCamera('arcCamera', // rotating around item camera
+                    //     BABYLON.Tools.ToRadians(45),    // x axis rotation
+                    //     BABYLON.Tools.ToRadians(45),    // y axis rotation
+                    //     10.0, box.position, scene       // distance from whatever, whatever = box.position, and give it scene 
+                    // ); 
+
+                    // FOLLLOW CAM:
+                    // var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, -5), scene);
+                    // camera.lockedTarget = box; ; // object that we're following.
+                    // // v2.5 and before uses camera.target = box, for example.
+                    // camera.radius = 10; //distance to stay away from box
+                    // camera.heightOffset = 0;
+                    // camera.maxCameraSpeed = 10
+
+                    
+                    camera.attachControl(canvas, true); // this gives our camera the ability to move about.
+
+                    // MOVEMENT KEYS aren't needed in arc rotate:    
+                    camera.keysUp.push(87); // pushes the aski scan code for w
+                    camera.keysDown.push(83);
+                    camera.keysLeft.push(65);
+                    camera.keysRight.push(68);
+                    
+                    return scene;
+                }
+                var scene = createScene();
+                engine.runRenderLoop(function(){
+                    // scene.getMeshByName('Box').position.z += 0.1;
+                    for (var i = 0; i < boxArr.length; i++){
+
+                        const negPos = i % 2 === 0 ? 1 : -1
+                        let numb = Math.floor(Math.random() * 3)
+                        // switch(numb){
+                        //     case 0:
+                            scene.getMeshByName(`Box${i}`).position.z += i/10 * negPos;
+                            // break;
+                            // case 1:
+                            scene.getMeshByName(`Box${i}`).position.x += i/10 * negPos;
+                            // break;
+                            // case 2: 
+                            scene.getMeshByName(`Box${i}`).position.y += i/10 * negPos;
+                            // break;
+                            // default: break;
+                        // }
+                    }
+                    scene.render(); //remember scene is your level, has all your pieces in it.
+                }); // runs about 60 times a second, as long as PC can keep up.
+
+            });
+        </script>
+    </body>
+</html>
